@@ -1,15 +1,7 @@
-#!/usr/bin/python
-
-'''
-Dino Chrome Game Bot - Guilherme Junqueira
-
-Python Basico Solyd
-https://solyd.com.br/treinamentos
-'''
 
 import time
 
-from PIL import ImageGrab
+import pyscreenshot as ImageGrab
 import pyautogui
 
 
@@ -27,15 +19,13 @@ def capture_screen():
 
 
 # Detects enemy by diff in pixel color in region of detections
-def detect_enemy(screen):
-    aux_color = screen.getpixel((int(X), Y1))
-    for x in range(int(X), int(X+15)):
-        for y in range(Y1, Y2):
-            color = screen.getpixel((x, y))
-            if color != aux_color:
-                return True # Return True for a detected enemy
-            else:
-                aux_color = color
+def detect_down(screen):
+   # aux_color = screen.getpixel((1013,821))
+    aux_color = screen.getpixel((2523,825))
+    return aux_color[0] > 130
+def detect_up(screen):
+    aux_color = screen.getpixel((2523,915))
+    return aux_color[0] > 130
 
 
 # Dino Jumps
@@ -43,14 +33,51 @@ def jump():
     global X
     pyautogui.press("up")
     X += 0.4  # Increment in detection region for increase speed of game
-
+def clickDown():
+    pyautogui.moveTo(3101, 592, 1)
+    pyautogui.click()
+def clickUp():
+    pyautogui.moveTo(3101, 528, 1)
+    pyautogui.click()
 
 print("Start in 3 seconds...")
 time.sleep(3)
 
 # Infinite Loop of bot
+investiu = False;
+cont = 0
+contInvestido = 0
+investimentos = 0
 while True:
-    screen = capture_screen()
-    if detect_enemy(screen):
-        jump()
 
+    print("-------------------")
+    print("Tempo sem investir %i" % contInvestido)
+    print("Fora da média: %i" % cont)
+    print("Investiu: %s" %(investiu))
+    print("Ivestimentos: %s" % investimentos)
+    print("-------------------\n\n")
+    screen = capture_screen()
+    if not investiu:
+        if detect_down(screen) :
+            cont += 1
+            if(cont > 20):
+                clickDown()
+                invertiu = True
+                contInvestido = 0
+                investimentos += 1
+            
+        elif detect_up(screen):
+            cont += 1
+            if(cont > 20):
+                clickUp()
+                invertiu = True
+                contInvestido = 0
+                investimentos += 1
+        else:
+            cont = 0
+    else:
+        if contInvestido > 60:
+            investiu = False
+            contInvestido = 0
+        else:
+            contInvestido += 1
