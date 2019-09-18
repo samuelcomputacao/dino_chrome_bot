@@ -4,80 +4,79 @@ import time
 import pyscreenshot as ImageGrab
 import pyautogui
 
-
-# Region of detections
-# Coordenates for resolution 1600x900
-X = 655.0  # X2 = X + 15
-Y1 = 215
-Y2 = 250
-
+investiu = False
+investimentos = 1
 
 # Take screenshot using PIL lib
 def capture_screen():
     screen = ImageGrab.grab()
     return screen
 
-
 # Detects enemy by diff in pixel color in region of detections
 def detect_down(screen):
    # aux_color = screen.getpixel((1013,821))
-    aux_color = screen.getpixel((2523,825))
+    aux_color = screen.getpixel((677,644))
     return aux_color[0] > 130
 def detect_up(screen):
-    aux_color = screen.getpixel((2523,915))
+    aux_color = screen.getpixel((677,698))
     return aux_color[0] > 130
-
-
-# Dino Jumps
-def jump():
-    global X
-    pyautogui.press("up")
-    X += 0.4  # Increment in detection region for increase speed of game
+    
 def clickDown():
-    pyautogui.moveTo(3101, 592, 1)
+    pyautogui.moveTo(1267, 592, 1)
     pyautogui.click()
+    relatorio()
+
 def clickUp():
-    pyautogui.moveTo(3101, 528, 1)
+    pyautogui.moveTo(1267, 528, 1)
     pyautogui.click()
+    relatorio()
 
-print("Start in 3 seconds...")
-time.sleep(3)
-
-# Infinite Loop of bot
-investiu = False;
-cont = 0
-contInvestido = 0
-investimentos = 0
-while True:
-
-    print("-------------------")
-    print("Tempo sem investir %i" % contInvestido)
-    print("Fora da média: %i" % cont)
-    print("Investiu: %s" %(investiu))
+def relatorio():
+    print("--------------------")
     print("Ivestimentos: %s" % investimentos)
     print("-------------------\n\n")
+
+def clickReload():
+    pyautogui.moveTo(86, 80, 1)
+    pyautogui.click()
+    print("reload")
+
+timeInicio = 0
+timeAux = 0
+timeReload = time.time()
+while True:
     screen = capture_screen()
     if not investiu:
         if detect_down(screen) :
-            cont += 1
-            if(cont > 20):
+            print("cima")
+            if(timeAux==0):
+                timeAux = time.time()
+
+            if((time.time() - timeAux) > 1):
                 clickDown()
                 invertiu = True
-                contInvestido = 0
+                timeInicio = time.time()
                 investimentos += 1
+                timeAux = 0
             
         elif detect_up(screen):
-            cont += 1
-            if(cont > 20):
+            print("baixo")
+            if(timeAux==0):
+                timeAux = time.time()
+
+            if((time.time() - timeAux) > 1):
                 clickUp()
+                timeInicio = time.time()
                 invertiu = True
-                contInvestido = 0
                 investimentos += 1
+                timeAux=0
         else:
-            cont = 0
+           timeAux=0
     else:
-        if contInvestido > 60:
+        if (time.time()-timeInicio) > 5 :
             investiu = False
-            contInvestido = 0
-        else:
-            contInvestido += 1
+            timeInicio = time.time()
+    
+    if((time.time() - timeReload) > 100):
+        clickReload()
+        timeReload = time.time()
